@@ -1,0 +1,84 @@
+<?php
+/**
+ * Functions and definitions, this file must be parseable by PHP 5.2.
+ *
+ * @package <%= projectPackageName %><% if(projectAuthor.full !== '') { %>
+ * @author  "<%= projectAuthor.full %>"<% } if(projectLicense !== undefined) { %>
+ * @license <%= projectLicense.type %> <%= projectLicense.url %><% } %>
+ * @link    https://developer.wordpress.org/themes/basics/theme-functions/
+ * @since   <%= projectVersion %>
+ */
+
+ use function locate_template;
+
+// Define theme wide control variables.
+define( 'MIN_PHP_VERSION', '<%= projectMinWpVersion %>' );
+define( 'MIN_WP_VERSION', '<%= projectMinPhpVersion %>' );
+
+// Define theme wide paths.
+define( 'ROOT_URL', get_template_directory_uri() );
+define( 'ROOT_URI', get_template_directory() );
+
+// Disable theme editor in admin.
+define( 'DISALLOW_FILE_EDIT', true );
+
+if ( function_exists( '<%= projectType %>_error' ) === false ) {
+	/**
+	 * Helper function for prettying up errors.
+	 *
+	 * @param string $message The error message body.
+	 * @param string $heading The error message heading.
+	 * @param string $title The page title.
+	 * @param array  $options Optional arguments array.
+	 */
+	function <%= projectType %>_error( $message, $heading = '', $title = '', $options = array() ) {
+		$title   = $title ?: __( '<%= projectType %> error', '<%= projectTextDomain %>' );
+		$heading = ( $heading ) ? $heading : $title;
+		$message = "<h1>{$heading}</h1><br><br>{$message}";
+		wp_die( $message, $title, $options );
+	};
+}
+
+// Theme compatibility check, bail early if requirements are not met.
+if ( version_compare( MIN_PHP_VERSION, phpversion(), '>=' ) === true || version_compare( MIN_WP_VERSION, get_bloginfo( 'version' ), '>=' ) === true ) {
+	require ROOT_URI . '/inc/back-compat.php';
+	return;
+}
+
+// Setup autoloader.
+$composer = ROOT_URI . '/vendor/autoload.php';
+
+// Ensure composer autoload.php exists.
+if ( file_exists( $composer ) === false ) {
+  <%= projectType %>_error(
+    sprintf(
+      "<code>{$composer}</code><br><br>%1s <code>%2s</code> %3s",
+      __( 'Please run the', '<%= projectTextDomain %>' ),
+      __( 'composer install', '<%= projectTextDomain %>' ),
+      __( 'command from the <%= projectType %> root directory.', '<%= projectTextDomain %>' )
+    ),
+    __( 'Autoloader not found.', '<%= projectTextDomain %>' )
+  );
+}
+
+include_once $composer;
+
+/*
+ * Required files.
+ *
+ * The mapped array determines the code library included in your <%= projectType %>.
+ * Add or remove files to the array as needed.
+ */
+
+array_map(
+	function ( $file ) {
+		$file = "./inc/{$file}.php";
+		if ( locate_template( $file, true, true ) === false ) {
+			<%= projectType %>_error(
+				"<code>{$file}</code><br><br>",
+				__( 'File not found.', '<%= projectTextDomain %>' )
+			);
+		}
+	},
+	['shims', 'helpers', 'setup', 'filters']
+);

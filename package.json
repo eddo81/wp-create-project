@@ -1,0 +1,32 @@
+{
+  "name": "@eddo81/wp-create-project",
+  "version": "1.0.0",
+  "author": "eddo81 <eduardo_jonnerstig@live.com>",
+  "private": false,
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "main": "index.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eddo81/wp-create-project"
+  },
+  "scripts": {
+    "start": "node ./index.js"
+  },
+  "bin": {
+    "@eddo81/wp-create-project": "./index.js"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "cross-env": "^7.0.3",
+    "ejs": "^3.1.6",
+    "fs-extra": "^10.0.0",
+    "ora": "^5.4.1",
+    "promisify-child-process": "^4.1.1",
+    "prompts": "^2.4.1",
+    "wp-pot": "^1.8.0"
+  },
+  "devDependencies": {}
+}

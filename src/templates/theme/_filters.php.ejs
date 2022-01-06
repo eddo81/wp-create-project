@@ -1,0 +1,34 @@
+<?php
+/**
+ * Add filter hooks here.
+ *
+ * @package <%= projectPackageName %><% if(projectAuthor.full !== '') { %>
+ * @author  "<%= projectAuthor.full %>"<% } if(projectLicense !== undefined) { %>
+ * @license <%= projectLicense.type %> <%= projectLicense.url %><% } %>
+ * @link    https://developer.wordpress.org/reference/functions/add_filter/
+ * @since   <%= projectVersion %>
+ */
+
+namespace <%= projectNamespace %>;
+
+use function add_filter;
+use function is_admin;
+
+if ( defined('ABSPATH') === false ) {
+	exit;
+}
+
+add_filter( 'upload_mimes', function ( $mimes ) {
+		$mimes['svg'] = 'image/svg+xml';
+		return $mimes;
+});
+
+add_filter( 'script_loader_tag', function ( $tag, $handle ) {
+	$theme_scrips = [];
+
+	if ( is_admin() === true || in_array( $handle, $theme_scrips, true ) === false ) {
+		return $tag;
+	}
+
+	return str_replace( ' src', ' defer="defer" src', $tag );
+}, 90, 2 );

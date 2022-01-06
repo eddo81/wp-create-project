@@ -1,0 +1,22 @@
+<?php
+/**
+ * The footer for the <%= projectName %> theme.
+ *
+ * Contains the closing of the main-tag.
+ *
+ * @package <%= projectPackageName %><% if(projectAuthor.full !== '') { %>
+ * @author  "<%= projectAuthor.full %>"<% } if(projectLicense !== undefined) { %>
+ * @license <%= projectLicense.type %> <%= projectLicense.url %><% } %>
+ * @link    https://developer.wordpress.org/themes/basics/template-files/#template-partials
+ * @since   <%= projectVersion %>
+ */
+
+namespace <%= projectNamespace %>;
+
+?>
+
+	</main>
+		<?php do_action( 'after_main' ); ?>
+		<?php wp_footer(); ?>
+	</body>
+</html>

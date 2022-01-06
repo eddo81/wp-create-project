@@ -1,0 +1,123 @@
+<?php
+/**
+ * Setup theme.
+ *
+ * @package <%= projectPackageName %><% if(projectAuthor.full !== '') { %>
+ * @author  "<%= projectAuthor.full %>"<% } if(projectLicense !== undefined) { %>
+ * @license <%= projectLicense.type %> <%= projectLicense.url %><% } %>
+ * @link    https://developer.wordpress.org/reference/hooks/after_setup_theme/
+ * @since   <%= projectVersion %>
+ */
+
+namespace <%= projectNamespace %>;
+
+if ( defined( 'ABSPATH' ) === false ) {
+	exit;
+}
+
+use function add_action;
+use function add_image_size;
+use function add_theme_support;
+use function is_admin;<% if(pot === true) { %>
+use function load_theme_textdomain;<% } %>
+use function register_nav_menus;
+
+/**
+ * Theme setup
+ *
+ * @link https://developer.wordpress.org/reference/hooks/after_setup_theme/
+ */
+add_action( 'after_setup_theme', function () {<% if(pot === true) { %>
+
+	/**
+	 * Load theme text domain.
+	 *
+	 * @link https://developer.wordpress.org/reference/functions/load_theme_textdomain/
+	 */
+	load_theme_textdomain( '<%= projectTextDomain %>', ROOT_URI . DIRECTORY_SEPARATOR . 'languages/' );<% } %>
+
+	/**
+	 * Enqueue theme scripts and styles.
+	 *
+	 * @link https://developer.wordpress.org/reference/functions/wp_enqueue_script/
+	 */
+
+	/**
+	 * Add inline script- and style-tags to document head.
+	 */
+	if ( is_admin() === false ) {
+		add_action( 'wp_head', function() {});
+	}
+
+	/**
+	 * Support navigation menus.
+	 *
+	 * @link https://developer.wordpress.org/reference/functions/add_theme_support/
+	 */
+	add_theme_support( 'menus' );
+
+	/**
+	 * Enable plugins to manage the document title.
+	 *
+	 * @link https://developer.wordpress.org/reference/functions/add_theme_support/#title-tag
+	 */
+	add_theme_support( 'title-tag' );
+
+	/**
+	 * Register navigation menus.
+	 *
+	 * @link https://developer.wordpress.org/reference/functions/register_nav_menus/
+	 */
+	register_nav_menus([
+		'primary' => __( 'Primary Navigation', '<%= projectTextDomain %>' )
+	]);
+
+	/**
+	 * Enable post thumbnails.
+	 *
+	 * @link https://developer.wordpress.org/themes/functionality/featured-images-post-thumbnails/
+	 */
+	add_theme_support( 'post-thumbnails' );
+
+	/**
+	 * Enable HTML5 markup support.
+	 *
+	 * @link https://developer.wordpress.org/reference/functions/add_theme_support/#html5
+	 */
+	add_theme_support( 'html5', ['caption', 'comment-form', 'comment-list', 'gallery', 'search-form'] );
+
+	/**
+	 * Manually select Post Formats to be supported.
+	 *
+	 * @link https://developer.wordpress.org/themes/functionality/post-formats/
+	 */
+	add_theme_support( 'post-formats', ['aside', 'gallery', 'link', 'image', 'quote', 'status', 'video', 'audio', 'chat'] );
+
+	/**
+	 * Enable selective refresh for widgets in customizer.
+	 *
+	 * @link https://developer.wordpress.org/themes/advanced-topics/customizer-api/#theme-support-in-sidebars
+	 */
+	add_theme_support( 'customize-selective-refresh-widgets' );
+
+	/**
+	 * Support default editor block styles.
+	 *
+	 * @link https://wordpress.org/gutenberg/handbook/extensibility/theme-support/
+	 */
+	add_theme_support( 'wp-block-styles' );
+
+	/**
+	 * Support wide alignment for editor blocks.
+	 *
+	 * @link https://wordpress.org/gutenberg/handbook/extensibility/theme-support/
+	 */
+	add_theme_support( 'align-wide' );
+
+	/**
+	 * Add custom image sizes.
+	 *
+	 * @link https://developer.wordpress.org/reference/functions/add_image_size/
+	 */
+
+}, 20 );

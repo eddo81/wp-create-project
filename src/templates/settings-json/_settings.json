@@ -1,0 +1,5 @@
+{<% if(phpcs !== false) { %>
+	"phpcs.enable": true,
+	"phpcs.composerJsonPath": "composer.json",
+	"editor.renderWhitespace": "all"<% } %>
+}
