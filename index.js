@@ -1,18 +1,19 @@
 #!/usr/bin/env node
 
-const fs = require("fs-extra");
-const path = require("path");
-const ora = require("ora");
-const prompts = require("prompts");
-const { exec } = require("promisify-child-process");
-const format = require("./src/utils/format.js");
-const validURL = require("./src/utils/vaildURL.js");
-const chalk = require("chalk");
-const ejs = require("ejs");
+const fs            = require("fs-extra");
+const path          = require("path");
+const ora           = require("ora");
+const prompts       = require("prompts");
+const wpPot         = require("wp-pot");
+const { exec }      = require("promisify-child-process");
+const format        = require("./src/utils/format.js");
+const validURL      = require("./src/utils/vaildURL.js");
+const chalk         = require("chalk");
+const ejs           = require("ejs");
 let fullProjectPath = "";
 let spinner;
-let counter = 1;
-let data;
+let counter         = 1;
+let data            = {};
 
 /**
  * Output intro message.
@@ -30,58 +31,98 @@ const outputIntroMessage = () => {
 };
 
 const outputSummaryMessage = (data) => {
-  let summery = {};
+  let summery = [];
 
-  summery[`${format.capcase(data.projectType)} name`] = data.projectName;
-  summery[`Package name`] = data.projectPackageName;
-  summery[`${format.capcase(data.projectType)} author`] = data.projectAuthor.full;
-
-  if(data.projectVersion) {
-    summery[`${format.capcase(data.projectType)} version`] = data.projectVersion;
-  }
+  summery.push({
+    label: `${data.projectType} name`,
+    text: data.projectName
+  });
 
   if(data.projectDescription) {
-    summery[`${format.capcase(data.projectType)} description`] = data.projectDescription;
+    summery.push({
+      label: `description`,
+      text: data.projectDescription
+    });
   }
+
+  summery.push({
+    label: `version`,
+    text: data.projectVersion
+  });
 
   if(data.projectUri) {
-    summery[`${format.capcase(data.projectType)} URI`] = data.projectUri;
-  }
-
-  if(data.projectLicense) {
-    summery[`${format.capcase(data.projectType)} licence`] = data.projectLicense.type;
+    summery.push({
+      label: `${data.projectType} uri`,
+      text: data.projectUri
+    });
   }
 
   if(data.projectTags) {
-    summery["Tags"] = data.projectTags;
+    summery.push({
+      label: `tags`,
+      text: data.projectTags
+    });
+  }
+
+  if(data.projectLicense) {
+    summery.push({
+      label: `licence`,
+      text: data.projectLicense.type
+    });
+  }
+
+  summery.push({
+    label: `author`,
+    text: data.projectAuthor.full
+  });
+
+  if(data.projectAuthor.url) {
+    summery.push({
+      label: `url`,
+      text: data.projectAuthor.url
+    });
   }
 
   if(data.phpcs) {
-    summery["PHPCS"] = "Yes";
+    summery.push({
+      label: `PHP codesniffer`,
+      text: "Yes"
+    });
   }
 
-  if(data.pot) {
-    summery["WP-Pot"] = "Yes";
+  if(data.i18n) {
+    summery.push({
+      label: `i18n support`,
+      text: "Yes"
+    });
   }
 
   if(data.git) {
-    summery["Git"] = "Yes";
+    summery.push({
+      label: `git version control`,
+      text: "Yes"
+    });
   }
 
-  if(data.readme) {
-    summery["README.md"] = "Yes";
-  }
+  summery.push({
+    label: `package`,
+    text: data.projectPackageName
+  });
 
-  if(data.editorconfig ) {
-    summery["EditorConfig"] = "Yes";
-  }
+  summery.push({
+    label: `namespace`,
+    text: data.projectNamespace
+  });
+
+  summery.push({
+    label: `prefix`,
+    text: data.projectPrefix
+  });
 
   console.log("");
-  console.log(chalk.bgGreen(chalk.black("The project summery is as follows:")));
-  Object.keys(summery).forEach(key => {
-    if (summery[key]) {
-      console.log(`${chalk(key)}: ${chalk.green(summery[key])}`);
-    }
+  console.log(chalk.green("Summery:"));
+  summery.forEach(el => {
+    console.log(`- ${el.label}: ${chalk.green(el.text)}`);
   });
   console.log("");
 };
@@ -100,10 +141,10 @@ const outputOutroMessage = (projectType) => {
  */
 const generatePot = async (data) => {
   await wpPot({
-    destFile: `./${data.projectFolderName}/languages/${data.projectPackageName}.pot`,
+    destFile: `./${data.projectPackageName}/languages/${data.projectPackageName}.pot`,
     domain: data.projectTextDomain,
     package: data.projectPackageName,
-    src: `./${data.projectFolderName}/**/*.php`
+    src: `./${data.projectPackageName}/**/*.php`
   });
 };
 
@@ -140,7 +181,7 @@ const onError = (exception, spinner) => {
 const preFlightChecklist = async () => {
 
   if (fs.existsSync(fullProjectPath) === true) {
-    throw new Error(`A folder with the name "${data.projectFolderName}" already exists at this location. Please select a different name for your "${data.projectType}" and try again.`);
+    throw new Error(`A folder with the name "${data.projectPackageName}" already exists at this location. Please select a different name for your "${data.projectType}" and try again.`);
   }
 
   if (data.phpcs) {
@@ -172,8 +213,6 @@ const preFlightChecklist = async () => {
  * Run the entire program.
  */
 const run = async () => {
-  data = { args: args };
-  
   let doContinue = false;
 
   outputIntroMessage();
@@ -216,8 +255,14 @@ const run = async () => {
 
         {
           type: "text",
+          name: "projectDescription",
+          message: (prev, values) => `The ${values.projectType}'s description (leave blank to skip):`,
+        },
+
+        {
+          type: "text",
           name: "projectVersion",
-          message: (prev, values) => `Enter the ${values.projectType}'s version number:`,
+          message: (prev, values) => `The ${values.projectType}'s version (default: 1.0.0):`,
           initial: `1.0.0`,
           validate: (value) => {
             return (/^\d{1,2}\.\d{1,2}\.\d{1,2}$/.test(value) === false) ? `Invalid version format, must be sequence of either single or double digits followed by a period.` : true;
@@ -225,15 +270,9 @@ const run = async () => {
         },
 
         {
-          type: "text",
-          name: "projectDescription",
-          message: (prev, values) => `Enter the ${values.projectType}'s description:`,
-        },
-
-        {
           type: "list",
           name: "projectTags",
-          message: (prev, values) => `Enter the ${values.projectType} keywords/tags:`,
+          message: (prev, values) => `The ${values.projectType} keywords/tags (leave blank to skip):`,
           initial: "",
           separator: ","
         },
@@ -241,7 +280,7 @@ const run = async () => {
         {
           type: "text",
           name: "projectUri",
-          message: (prev, values) => `Enter the ${values.projectType}'s URI (leave blank to skip):`,
+          message: (prev, values) => `The ${values.projectType}'s URI (leave blank to skip):`,
           validate: (value) => {
             if (value === '') {
               return true;
@@ -254,13 +293,16 @@ const run = async () => {
         {
           type: "text",
           name: "projectAuthorName",
-          message:  (prev, values) => `Please enter the name of the ${values.projectType} author:`,
+          message:  (prev, values) => `The author's name:`,
+          validate: (value) => {
+            return (/^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/.test(value) === false) ? `You have entered and invalid author name!` : true;
+          }
         },
 
         {
           type: "text",
           name: "projectAuthorEmail",
-          message: `Please enter the author email (leave blank to skip):`,
+          message: (prev, values) => `The author's email (leave blank to skip):`,
           validate: (value) => {
             if (value === '') {
               return true;
@@ -273,7 +315,7 @@ const run = async () => {
         {
           type: "text",
           name: "projectAuthorUrl",
-          message: `Please enter the author url (leave blank to skip):`,
+          message: (prev, values) => `The author's url (leave blank to skip):`,
           validate: (value) => {
             if (value === '') {
               return true;
@@ -284,47 +326,35 @@ const run = async () => {
         },
 
         {
-          type: 'multiselect',
-          name: 'projectFeatures',
-          message: (prev, values) => `Do you wish to include any of the following files/features in your ${values.projectType}?`,
-          choices: [
-            { 
-              title: 'PHPCS', 
-              value: 'phpcs',
-              selected: true 
-            },
-            { 
-              title: 'WP-Pot', 
-              value: 'wppot',
-              selected: true 
-            },
-            { 
-              title: 'Git', 
-              value: 'git',
-              selected: true 
-            },
-            { 
-              title: 'README.md', 
-              value: 'readme',
-              selected: true 
-            },
-            { 
-              title: 'LICENSE', 
-              value: 'license',
-              selected: true 
-            },
-            { 
-              title: 'EditorConfig',
-              value: 'editorconfig',
-              selected: true 
-            }
-          ],
-          instructions: false,
-          hint: "- Space to select. Return to submit."
+          type: "confirm",
+          name: "phpcs",
+          message: "Use PHP CodeSniffer with WP Coding Standards?",
+          initial: true
         },
 
         {
-          type: (prev, values) => values.projectFeatures.includes("license") ? "select" : null,
+          type: "confirm",
+          name: "git",
+          message: (prev, values) => `Use git version control?`,
+          initial: true
+        },
+
+        {
+          type: "confirm",
+          name: "i18n",
+          message: (prev, values) => `Add i18n translation support?`,
+          initial: true
+        },
+
+        {
+          type: "confirm",
+          name: "license",
+          message: (prev, values) => `Add a project license?`,
+          initial: true
+        },
+
+        {
+          type: (prev, values) => (values.license === true) ? "select" : null,
           name: "projectLicense",
           message: (prev, values) => `Select which type of license you would like to use for this ${values.projectType}:`,
           choices: [
@@ -350,7 +380,7 @@ const run = async () => {
               }
             },
           ],
-          initial: 1
+          initial: 0
         }
       ],
       { onCancel }
@@ -359,7 +389,7 @@ const run = async () => {
     data.projectAuthor = {
       name: answers.projectAuthorName ? answers.projectAuthorName : '',
       email: answers.projectAuthorEmail ? answers.projectAuthorEmail : '',
-      url: answers.authorUrl ? answers.authorUrl : '',
+      url: answers.projectAuthorUrl ? answers.projectAuthorUrl : '',
       full: answers.projectAuthorName ? `${answers.projectAuthorName}${answers.projectAuthorEmail ? ' <' + answers.projectAuthorEmail + '>' : ''}` : ''
     };
 
@@ -367,26 +397,24 @@ const run = async () => {
     data.projectMinPhpVersion = "7.1";
     data.projectName          = answers.projectName;
     data.projectDescription   = answers.projectDescription || '';
-    data.projectUri           = answers.projectUri;
+    data.projectUri           = answers.projectUri || '';
     data.projectVersion       = answers.projectVersion ? answers.projectVersion : "1.0.0";
     data.projectType          = answers.projectType;
-    data.projectTags          = answers.projectTags ? answers.projectTags : "";
-    data.projectFolderName    = format.dash(data.projectName);
-    data.projectPackageName   = format.underscore(data.projectName);
-    data.projectPrefix        = format.prefix(data.projectName);
-    data.projectNamespace     = format.capcase(data.projectPackageName);
-    data.projectTextDomain    = format.dash(data.projectName.toLowerCase());
+    data.projectTags          = answers.projectTags.filter((el) => { return (el.trim() !== ""); }).length > 0 ? answers.projectTags : '';
+    data.projectPackageName   = format.dash(data.projectName);
+    data.projectVendor        = format.dash(data.projectAuthor.name);
+    data.projectPrefix        = format.underscore(data.projectName);
+    data.projectNamespace     = format.capcase(data.projectName);
+    data.projectTextDomain    = data.projectPackageName;
     data.projectLicense       = answers.projectLicense || undefined;
 
-    data.readme               = answers.projectFeatures.includes('readme');
-    data.editorconfig         = answers.projectFeatures.includes('editorconfig');
-    data.phpcs                = answers.projectFeatures.includes('phpcs');
-    data.pot                  = answers.projectFeatures.includes('wppot');
-    data.git                  = answers.projectFeatures.includes('git');
+    data.phpcs                = answers.phpcs;
+    data.i18n                 = answers.i18n;
+    data.git                  = answers.git;
     data.year                 = new Date().getFullYear();
 
     // Globally save the package (because it's also our folder name)
-    fullProjectPath = path.join(process.cwd(), data.projectFolderName);
+    fullProjectPath = path.join(process.cwd(), data.projectPackageName);
 
     // Output summary
     outputSummaryMessage(data);
@@ -446,39 +474,10 @@ const run = async () => {
         'settings-json': path.resolve(__dirname, 'src/templates/settings-json'),
         'git': path.resolve(__dirname, 'src/templates/git')
       },
-      output: `./${data.projectFolderName}`
+      output: `./${data.projectPackageName}`
     };
   
     fs.mkdirSync(`${folders.output}/inc`, { recursive: true });
-
-    if (data.projectLicense !== undefined) {
-      copyTpl(`${folders.input['license']}/_${data.projectLicense.type}.txt`, `${folders.output}/LICENSE`, data);
-    }
-
-    if (data.editorconfig === true) {
-      fs.copySync(folders.input['editor-config'], folders.output);
-    }
-
-    if (data.readme === true) {
-      copyTpl(`${folders.input['readme']}/_README.md.ejs`, `${folders.output}/README.md`, data);
-    }
-
-    if (data.phpcs === true) {
-      fs.mkdirSync(`${folders.output}/.vscode`, { recursive: true });
-      copyTpl(`${folders.input['settings-json']}/_settings-json`, `${folders.output}/.vscode/settings-json`, data);
-      copyTpl(`${folders.input['phpcs']}/_phpcs.xml`, `${folders.output}/phpcs.xml`, data);
-    }
-
-    if (data.git === true) {
-      copyTpl(`${folders.input['git']}/_gitattributes.ejs`, `${folders.output}/.gitattributes`, data);
-      copyTpl(`${folders.input['git']}/_gitignore.ejs`, `${folders.output}/.gitignore`, data);
-    }
-
-    if (data.pot === true) {
-      fs.mkdirSync(`${folders.output}/languages`, { recursive: true });
-    }
-
-    copyTpl(`${folders.input['composer-json']}/_composer.json.ejs`, `${folders.output}/composer.json`, data);
 
     if(data.projectType === "theme") {
       // Copy files to inc folder
@@ -499,12 +498,40 @@ const run = async () => {
       copyTpl(`${folders.input['theme']}/_style.css.ejs`, `${folders.output}/style.css`, data);
 
       // Generate template-parts folder
-      fs.mkdirSync(`${folders.output}/template-parts/partials`, { recursive: true });
+      fs.mkdirSync(`${folders.output}/template-parts`, { recursive: true });
     }
 
     if(data.projectType === "plugin") {
 
     }
+
+    copyTpl(`${folders.input['readme']}/_README.md.ejs`, `${folders.output}/README.md`, data);
+
+    if (data.projectLicense !== undefined) {
+      copyTpl(`${folders.input['license']}/_${data.projectLicense.type}.txt`, `${folders.output}/LICENSE`, data);
+    }
+
+    if (data.phpcs === true) {
+      fs.copySync(folders.input['editor-config'], folders.output);
+      fs.mkdirSync(`${folders.output}/.vscode`, { recursive: true });
+      copyTpl(`${folders.input['settings-json']}/_settings.json.ejs`, `${folders.output}/.vscode/settings.json`, data);
+      copyTpl(`${folders.input['phpcs']}/_phpcs.xml.ejs`, `${folders.output}/phpcs.xml`, data);
+    }
+
+    if (data.git === true) {
+      copyTpl(`${folders.input['git']}/_gitattributes.ejs`, `${folders.output}/.gitattributes`, data);
+      copyTpl(`${folders.input['git']}/_gitignore.ejs`, `${folders.output}/.gitignore`, data);
+
+      if(data.projectType === "theme") {
+        copyTpl(`${folders.input['git']}/_gitkeep.ejs`, `${folders.output}/template-parts/.gitkeep`, data);
+      }
+    }
+
+    if (data.i18n === true) {
+      fs.mkdirSync(`${folders.output}/languages`, { recursive: true });
+    }
+
+    copyTpl(`${folders.input['composer-json']}/_composer.json.ejs`, `${folders.output}/composer.json`, data);
 
     spinner.succeed();
     counter += 1; 
@@ -516,8 +543,8 @@ const run = async () => {
   //  3. Create language file
   // ---------------------------------
 
-  if (data.pot) {
-    spinner = ora(`${counter}. Generating Pot file`).start();
+  if (data.i18n) {
+    spinner = ora(`${counter}. Adding i18n support`).start();
     await generatePot(data)
       .then(() => { 
         spinner.succeed();
@@ -531,7 +558,7 @@ const run = async () => {
   // ---------------------------------
 
   if (data.phpcs) {
-    spinner = ora(`${counter}. Installing Composer dependencies`).start();
+    spinner = ora(`${counter}. Installing composer dependencies`).start();
     await exec(`cd "${fullProjectPath}" && composer install --ignore-platform-reqs`)
       .then(() => { 
         spinner.succeed();

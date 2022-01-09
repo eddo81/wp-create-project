@@ -8,8 +8,8 @@
  * E.g., it puts together the home page when no home.php file exists.
  *
  * @package <%= projectPackageName %><% if(projectAuthor.full !== '') { %>
- * @author  "<%= projectAuthor.full %>"<% } if(projectLicense !== undefined) { %>
- * @license <%= projectLicense.type %> <%= projectLicense.url %><% } %>
+ * @author  "<%- projectAuthor.full %>"<% } if(projectLicense !== undefined) { %>
+ * @license <%= projectLicense.type %><% } %>
  * @link    https://codex.wordpress.org/Template_Hierarchy
  * @since   <%= projectVersion %>
  */

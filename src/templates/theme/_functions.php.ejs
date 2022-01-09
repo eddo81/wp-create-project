@@ -3,13 +3,13 @@
  * Functions and definitions, this file must be parseable by PHP 5.2.
  *
  * @package <%= projectPackageName %><% if(projectAuthor.full !== '') { %>
- * @author  "<%= projectAuthor.full %>"<% } if(projectLicense !== undefined) { %>
- * @license <%= projectLicense.type %> <%= projectLicense.url %><% } %>
+ * @author  "<%- projectAuthor.full %>"<% } if(projectLicense !== undefined) { %>
+ * @license <%= projectLicense.type %><% } %>
  * @link    https://developer.wordpress.org/themes/basics/theme-functions/
  * @since   <%= projectVersion %>
  */
 
- use function locate_template;
+use function locate_template;
 
 // Define theme wide control variables.
 define( 'MIN_PHP_VERSION', '<%= projectMinWpVersion %>' );
@@ -22,7 +22,7 @@ define( 'ROOT_URI', get_template_directory() );
 // Disable theme editor in admin.
 define( 'DISALLOW_FILE_EDIT', true );
 
-if ( function_exists( '<%= projectType %>_error' ) === false ) {
+if ( function_exists( '<%= projectPrefix %>_theme_error' ) === false ) {
 	/**
 	 * Helper function for prettying up errors.
 	 *
@@ -31,8 +31,8 @@ if ( function_exists( '<%= projectType %>_error' ) === false ) {
 	 * @param string $title The page title.
 	 * @param array  $options Optional arguments array.
 	 */
-	function <%= projectType %>_error( $message, $heading = '', $title = '', $options = array() ) {
-		$title   = $title ?: __( '<%= projectType %> error', '<%= projectTextDomain %>' );
+	function <%= projectPrefix %>_theme_error( $message, $heading = '', $title = '', $options = array() ) {
+		$title   = $title ?: __( 'theme error'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> );
 		$heading = ( $heading ) ? $heading : $title;
 		$message = "<h1>{$heading}</h1><br><br>{$message}";
 		wp_die( $message, $title, $options );
@@ -50,14 +50,14 @@ $composer = ROOT_URI . '/vendor/autoload.php';
 
 // Ensure composer autoload.php exists.
 if ( file_exists( $composer ) === false ) {
-  <%= projectType %>_error(
+  <%= projectPrefix %>_theme_error(
     sprintf(
       "<code>{$composer}</code><br><br>%1s <code>%2s</code> %3s",
-      __( 'Please run the', '<%= projectTextDomain %>' ),
-      __( 'composer install', '<%= projectTextDomain %>' ),
-      __( 'command from the <%= projectType %> root directory.', '<%= projectTextDomain %>' )
+      __( 'Please run the'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> ),
+      __( 'composer install'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> ),
+      __( 'command from the <%= projectType %> root directory.'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> )
     ),
-    __( 'Autoloader not found.', '<%= projectTextDomain %>' )
+    __( 'Autoloader not found.'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> )
   );
 }
 
@@ -66,7 +66,7 @@ include_once $composer;
 /*
  * Required files.
  *
- * The mapped array determines the code library included in your <%= projectType %>.
+ * The mapped array determines the code library included in your theme.
  * Add or remove files to the array as needed.
  */
 
@@ -74,9 +74,9 @@ array_map(
 	function ( $file ) {
 		$file = "./inc/{$file}.php";
 		if ( locate_template( $file, true, true ) === false ) {
-			<%= projectType %>_error(
+			<%= projectPrefix %>_theme_error(
 				"<code>{$file}</code><br><br>",
-				__( 'File not found.', '<%= projectTextDomain %>' )
+				__( 'File not found.'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> )
 			);
 		}
 	},

@@ -4,8 +4,8 @@
   Description:        <%= projectDescription %><% } if(projectTags !== '') { %>
   Tags:               <%= projectTags %><% } %>
   Version:            <%= projectVersion %>
-  Author:             <%= projectAuthor.name %><% } if(projectAuthor.url !== '') { %>
-  Author URI:         <%= projectAuthor.url %><% } %>
+  Author:             <%= projectAuthor.name %><% if(projectAuthor.url !== '') { %>
+  Author URI:         <%= projectAuthor.url %><% } if(i18n !== false) { %>
   Text Domain:        <%= projectTextDomain %><% } if(projectLicense !== undefined) { %>
 
   License:            <%= projectLicense.type %>

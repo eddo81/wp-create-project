@@ -3,8 +3,8 @@
  * The template for displaying 404 pages (not found).
  *
  * @package <%= projectPackageName %><% if(projectAuthor.full !== '') { %>
- * @author  "<%= projectAuthor.full %>"<% } if(projectLicense !== undefined) { %>
- * @license <%= projectLicense.type %> <%= projectLicense.url %><% } %>
+ * @author  "<%- projectAuthor.full %>"<% } if(projectLicense !== undefined) { %>
+ * @license <%= projectLicense.type %><% } %>
  * @link    https://codex.wordpress.org/Creating_an_Error_404_Page
  * @since   <%= projectVersion %>
  */

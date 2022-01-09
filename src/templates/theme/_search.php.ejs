@@ -3,8 +3,8 @@
  * The template for displaying search results pages.
  *
  * @package <%= projectPackageName %><% if(projectAuthor.full !== '') { %>
- * @author  "<%= projectAuthor.full %>"<% } if(projectLicense !== undefined) { %>
- * @license <%= projectLicense.type %> <%= projectLicense.url %><% } %>
+ * @author  "<%- projectAuthor.full %>"<% } if(projectLicense !== undefined) { %>
+ * @license <%= projectLicense.type %><% } %>
  * @link    https://developer.wordpress.org/themes/basics/template-hierarchy/#search-result
  * @since   <%= projectVersion %>
  */
@@ -18,7 +18,7 @@ use function get_search_query;
 get_header(); ?>
 
 	<section id="search">
-		<h1><?= sprintf("%1s {$wp_query->found_posts} %2s", __( 'Search Results for', '<%= projectTextDomain %>' ), get_search_query() ); ?></h1>
+		<h1><?= sprintf("%1s {$wp_query->found_posts} %2s", __( 'Search Results for'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> ), get_search_query() ); ?></h1>
 	</section>
 
 <?php get_footer();

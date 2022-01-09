@@ -6,8 +6,8 @@
  * up until <main role="main">.
  *
  * @package <%= projectPackageName %><% if(projectAuthor.full !== '') { %>
- * @author  "<%= projectAuthor.full %>"<% } if(projectLicense !== undefined) { %>
- * @license <%= projectLicense.type %> <%= projectLicense.url %><% } %>
+ * @author  "<%- projectAuthor.full %>"<% } if(projectLicense !== undefined) { %>
+ * @license <%= projectLicense.type %><% } %>
  * @link    https://developer.wordpress.org/themes/basics/template-files/#template-partials
  * @since   <%= projectVersion %>
  */
@@ -35,8 +35,7 @@ use function __;
 	<body <?php body_class(); ?>>
 		<?php wp_body_open(); ?>
 		<noscript id="noscript">
-			<p><?= __( 'This page requires JavaScript, please enable it in your browser to access the content.', '<%= projectTextDomain %>' ); ?></p>
+			<p><?= __( 'This page requires JavaScript, please enable it in your browser to access the content.'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> ); ?></p>
 		</noscript>
 		<!--[if lte IE 9]><p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.'</p><![endif]-->
-		<?php do_action( 'before_main' ); ?>
 		<main role="main" id="app">

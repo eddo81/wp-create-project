@@ -1,10 +1,10 @@
 function capcase(string) {
   string = cleanChars(string);
   return string
-    .replace(/\W+/g, "_")
-    .split("_")
+    .replace(/\W+/g, " ")
+    .split(" ")
     .map(item => item[0].toUpperCase() + item.slice(1))
-    .join("_");
+    .join("");
 }
 
 function underscore(string) {

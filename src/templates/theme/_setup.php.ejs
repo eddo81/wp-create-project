@@ -3,8 +3,8 @@
  * Setup theme.
  *
  * @package <%= projectPackageName %><% if(projectAuthor.full !== '') { %>
- * @author  "<%= projectAuthor.full %>"<% } if(projectLicense !== undefined) { %>
- * @license <%= projectLicense.type %> <%= projectLicense.url %><% } %>
+ * @author  "<%- projectAuthor.full %>"<% } if(projectLicense !== undefined) { %>
+ * @license <%= projectLicense.type %><% } %>
  * @link    https://developer.wordpress.org/reference/hooks/after_setup_theme/
  * @since   <%= projectVersion %>
  */
@@ -18,7 +18,7 @@ if ( defined( 'ABSPATH' ) === false ) {
 use function add_action;
 use function add_image_size;
 use function add_theme_support;
-use function is_admin;<% if(pot === true) { %>
+use function is_admin;<% if(i18n === true) { %>
 use function load_theme_textdomain;<% } %>
 use function register_nav_menus;
 
@@ -27,7 +27,7 @@ use function register_nav_menus;
  *
  * @link https://developer.wordpress.org/reference/hooks/after_setup_theme/
  */
-add_action( 'after_setup_theme', function () {<% if(pot === true) { %>
+add_action( 'after_setup_theme', function () {<% if(i18n === true) { %>
 
 	/**
 	 * Load theme text domain.
@@ -69,7 +69,7 @@ add_action( 'after_setup_theme', function () {<% if(pot === true) { %>
 	 * @link https://developer.wordpress.org/reference/functions/register_nav_menus/
 	 */
 	register_nav_menus([
-		'primary' => __( 'Primary Navigation', '<%= projectTextDomain %>' )
+		'primary' => __( 'Primary Navigation'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> )
 	]);
 
 	/**

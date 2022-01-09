@@ -1,9 +1,9 @@
 {
-  "name": "<%= projectAuthor.name %>/<%= projectPackageName %>",
+  "name": "<%= projectVendor %>/<%= projectPackageName %>",
   "type": "wordpress-<%= projectType %>",<% if(projectLicense !== undefined) { %>
-  "license": "<%= license.type %>",<% } if(projectDescription !== '') { %>
-  "description": "<%= description %>",<% } %>
-  "keywords": ["wordpress, composer"],
+  "license": "<%= projectLicense.type %>",<% } if(projectDescription !== '') { %>
+  "description": "<%= projectDescription %>",<% } %>
+  "keywords": ["wordpress, wordpress-<%= projectType %>, composer"],
   "autoload": {
     "psr-4": {
       "<%= projectNamespace %>\\": ["inc"]

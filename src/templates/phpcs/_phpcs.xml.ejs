@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<ruleset name="<%= packageName %>">
+<ruleset name="<%= projectPackageName %>">
 
 	<!-- Exclude the Composer Vendor directory. -->
 	<exclude-pattern>/vendor/*</exclude-pattern>
@@ -35,14 +35,14 @@
 		<exclude name="WordPress.NamingConventions.ValidHookName" />
 		<exclude name="WordPress.NamingConventions.ValidVariableName" />
 		<exclude name="WordPress.Security.EscapeOutput" />
-	</rule>
+	</rule><% if(i18n !== false) { %>
 
   <!-- Verify that the text_domain is set to the desired text-domain. Multiple valid text domains can be provided as a comma-delimited list. -->
   <rule ref="WordPress.WP.I18n">
     <properties>
       <property name="text_domain" type="array" value="<%= projectTextDomain %>" />
     </properties>
-  </rule>
+  </rule><% } %>
 
 	<rule ref="WordPress.WP.AlternativeFunctions">
     <properties>
