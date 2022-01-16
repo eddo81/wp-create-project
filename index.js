@@ -270,7 +270,7 @@ const run = async () => {
         },
 
         {
-          type: (prev, values) => (values.projectType === "theme") ? "list" : [],
+          type: (prev, values) => (values.projectType === "theme") ? "list" : null,
           name: "projectTags",
           message: (prev, values) => `The ${values.projectType} keywords/tags (leave blank to skip):`,
           initial: "",
@@ -400,7 +400,7 @@ const run = async () => {
     data.projectUri           = answers.projectUri || '';
     data.projectVersion       = answers.projectVersion ? answers.projectVersion : "1.0.0";
     data.projectType          = answers.projectType;
-    data.projectTags          = answers.projectTags.filter((el) => { return (el.trim() !== ""); }).length > 0 ? answers.projectTags : '';
+    data.projectTags          = (answers.projectTags !== null && answers.projectTags.filter((el) => { return (el.trim() !== ""); }).length > 0) ? answers.projectTags : '';
     data.projectPackageName   = format.dash(data.projectName);
     data.projectVendor        = format.dash(data.projectAuthor.name);
     data.projectPrefix        = format.underscore(data.projectName);
