@@ -48,37 +48,37 @@ if ( version_compare( MIN_PHP_VERSION, phpversion(), '>=' ) === true || version_
 
 // Ensure composer autoload.php exists.
 if ( file_exists( $composer ) === false ) {
-  <%= projectPrefix %>_theme_error(
-    sprintf(
-      "<code>{$composer}</code><br><br>%1s <code>%2s</code> %3s",
-      __( 'Please run the'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> ),
-      __( 'composer install'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> ),
-      __( 'command from the <%= projectType %> root directory.'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> )
-    ),
-    __( 'Autoloader not found.'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> )
-  );
+	<%= projectPrefix %>_theme_error(
+		sprintf(
+			"<code>{$composer}</code><br><br>%1s <code>%2s</code> %3s",
+			__( 'Please run the'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> ),
+			__( 'composer install'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> ),
+			__( 'command from the <%= projectType %> root directory.'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> )
+		),
+		__( 'Autoloader not found.'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> )
+	);
 } else {
 
-  /*
-   * Required files.
-   *
-   * The mapped array determines the code library included in your theme.
-   * Add or remove files to the array as needed.
-   */
+	/*
+	 * Required files.
+	 *
+	 * The mapped array determines the code library included in your theme.
+	 * Add or remove files to the array as needed.
+	 */
 
-  include_once $composer;
-  
-  array_map(
-    function ( $file ) {
-      $file = "./inc/{$file}.php";
-      if ( file_exists( $file ) === false ) {
-        <%= projectPrefix %>_theme_error(
-          "<code>{$file}</code><br><br>",
-          __( 'File not found.'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> )
-        );
-      }
-      include $file;
-    },
-    ['shims', 'helpers', 'setup', 'filters']
-  );
+	include_once $composer;
+
+	array_map(
+		function ( $file ) {
+			$file = "./inc/{$file}.php";
+			if ( file_exists( $file ) === false ) {
+				<%= projectPrefix %>_theme_error(
+					"<code>{$file}</code><br><br>",
+					__( 'File not found.'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> )
+				);
+			}
+			include $file;
+		},
+		['shims', 'helpers', 'setup', 'filters']
+	);
 }

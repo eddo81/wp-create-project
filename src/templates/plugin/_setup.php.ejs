@@ -24,55 +24,55 @@ use function register_activation_hook;
 use function register_deactivation_hook;
 
 if ( function_exists( '<%= projectPrefix %>_plugin_activation' ) === false ) {
-  /**
-  * Plugin activation
-  *
-  * @link https://developer.wordpress.org/reference/functions/register_activation_hook/
-  *
-  * @return void
-  */
-  function <%= projectPrefix %>_plugin_activation() {
+	/**
+	 * Plugin activation
+	 *
+	 * @link https://developer.wordpress.org/reference/functions/register_activation_hook/
+	 *
+	 * @return void
+	 */
+	function <%= projectPrefix %>_plugin_activation() {
 
-  }
+	}
 }
 register_activation_hook( ROOT_FILE, '<%= projectPrefix %>_plugin_activation' );
 
 if ( function_exists( '<%= projectPrefix %>_plugin_deactivation' ) === false ) {
-  /**
-  * Plugin deactivation
-  *
-  * @link https://developer.wordpress.org/reference/functions/register_deactivation_hook/
-  *
-  * @return void
-  */
-  function <%= projectPrefix %>_plugin_deactivation() {
+	/**
+	 * Plugin deactivation
+	 *
+	 * @link https://developer.wordpress.org/reference/functions/register_deactivation_hook/
+	 *
+	 * @return void
+	 */
+	function <%= projectPrefix %>_plugin_deactivation() {
 
-  }
+	}
 }
 register_deactivation_hook( ROOT_FILE, '<%= projectPrefix %>_plugin_deactivation' );
 
 if ( function_exists( '<%= projectPrefix %>_plugin_init' ) === false ) {
-  /**
-  * Plugin init
-  *
-  * @link https://developer.wordpress.org/reference/hooks/init/
-  *
-  * @return void
-  */
-  function <%= projectPrefix %>_plugin_init() {<% if(i18n === true) { %>
+	/**
+	 * Plugin init
+	 *
+	 * @link https://developer.wordpress.org/reference/hooks/init/
+	 *
+	 * @return void
+	 */
+	function <%= projectPrefix %>_plugin_init() {<% if(i18n === true) { %>
 
-    /**
-    * Load plugin text domain.
-    *
-    * @link https://developer.wordpress.org/reference/functions/load_plugin_textdomain/
-    */
-   load_plugin_textdomain( '<%= projectTextDomain %>', false, dirname( dirname( plugin_basename( ROOT_FILE ) ) ) . DIRECTORY_SEPARATOR . 'languages/' );<% } %>
- 
-   /**
-    * Enqueue plugin scripts and styles.
-    *
-    * @link https://developer.wordpress.org/reference/functions/wp_enqueue_script/
-    */
-  }
+		/**
+		 * Load plugin text domain.
+		 *
+		 * @link https://developer.wordpress.org/reference/functions/load_plugin_textdomain/
+		 */
+		load_plugin_textdomain( '<%= projectTextDomain %>', false, dirname( dirname( plugin_basename( ROOT_FILE ) ) ) . DIRECTORY_SEPARATOR . 'languages/' );<% } %>
+
+		/**
+		 * Enqueue plugin scripts and styles.
+		 *
+		 * @link https://developer.wordpress.org/reference/functions/wp_enqueue_script/
+		 */
+	}
 }
 add_action( 'init', '<%= projectPrefix %>_plugin_init', 20 );
