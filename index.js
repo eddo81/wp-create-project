@@ -402,7 +402,7 @@ const run = async () => {
     data.projectType          = answers.projectType;
     data.projectTags          = '';
 
-    if(answers.projectTags !== null) {
+    if(answers.projectTags) {
       data.projectTags = answers.projectTags.filter((el) => { return (el.trim() !== ""); }).length > 0 ? answers.projectTags : '';
     }
 
