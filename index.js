@@ -270,7 +270,7 @@ const run = async () => {
         },
 
         {
-          type: "list",
+          type: (prev, values) => (values.projectType === "theme") ? "list" : null,
           name: "projectTags",
           message: (prev, values) => `The ${values.projectType} keywords/tags (leave blank to skip):`,
           initial: "",
@@ -480,14 +480,14 @@ const run = async () => {
     fs.mkdirSync(`${folders.output}/inc`, { recursive: true });
 
     if(data.projectType === "theme") {
-      // Copy files to inc folder
-      copyTpl(`${folders.input['theme']}/_back-compat.php.ejs`, `${folders.output}/inc/back-compat.php`, data);
+      // Copy files to inc folder      
       copyTpl(`${folders.input['theme']}/_filters.php.ejs`, `${folders.output}/inc/filters.php`, data);
       copyTpl(`${folders.input['theme']}/_helpers.php.ejs`, `${folders.output}/inc/helpers.php`, data);
       copyTpl(`${folders.input['theme']}/_setup.php.ejs`, `${folders.output}/inc/setup.php`, data);
       copyTpl(`${folders.input['theme']}/_shims.php.ejs`, `${folders.output}/inc/shims.php`, data);
 
       // Copy files to root folder
+      copyTpl(`${folders.input['theme']}/_backwards-compatibility.php.ejs`, `${folders.output}/backwards-compatibility.php`, data);
       copyTpl(`${folders.input['theme']}/_404.php.ejs`, `${folders.output}/404.php`, data);
       copyTpl(`${folders.input['theme']}/_archive.php.ejs`, `${folders.output}/archive.php`, data);
       copyTpl(`${folders.input['theme']}/_footer.php.ejs`, `${folders.output}/footer.php`, data);
@@ -502,10 +502,14 @@ const run = async () => {
     }
 
     if(data.projectType === "plugin") {
-
+      // Copy files to root folder
+      copyTpl(`${folders.input['plugin']}/_plugin.php.ejs`, `${folders.output}/${data.projectPackageName}.php`, data);
+      copyTpl(`${folders.input['plugin']}/_backwards-compatibility.php.ejs`, `${folders.output}/backwards-compatibility.php`, data);
+      
+      // Copy files to inc folder
+      copyTpl(`${folders.input['plugin']}/_setup.php.ejs`, `${folders.output}/inc/setup.php`, data);
+      copyTpl(`${folders.input['plugin']}/_helpers.php.ejs`, `${folders.output}/inc/helpers.php`, data);
     }
-
-    copyTpl(`${folders.input['readme']}/_README.md.ejs`, `${folders.output}/README.md`, data);
 
     if (data.projectLicense !== undefined) {
       copyTpl(`${folders.input['license']}/_${data.projectLicense.type}.txt`, `${folders.output}/LICENSE`, data);
@@ -532,6 +536,7 @@ const run = async () => {
     }
 
     copyTpl(`${folders.input['composer-json']}/_composer.json.ejs`, `${folders.output}/composer.json`, data);
+    copyTpl(`${folders.input['readme']}/_README.md.ejs`, `${folders.output}/README.md`, data);
 
     spinner.succeed();
     counter += 1; 
