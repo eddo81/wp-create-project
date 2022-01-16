@@ -270,7 +270,7 @@ const run = async () => {
         },
 
         {
-          type: (prev, values) => (values.projectType === "theme") ? "list" : null,
+          type: (prev, values) => (values.projectType === "theme") ? "list" : [],
           name: "projectTags",
           message: (prev, values) => `The ${values.projectType} keywords/tags (leave blank to skip):`,
           initial: "",
