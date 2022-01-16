@@ -5,25 +5,38 @@
  * @package <%= projectPackageName %><% if(projectAuthor.full !== '') { %>
  * @author  "<%- projectAuthor.full %>"<% } if(projectLicense !== undefined) { %>
  * @license <%= projectLicense.type %><% } %>
- * @link    https://developer.wordpress.org/themes/basics/theme-functions/
+ * @link    https://developer.wordpress.org/plugins/plugin-basics/header-requirements/
  * @since   <%= projectVersion %>
+ *
+ * @wordpress-plugin
+ * Plugin Name: <%= projectName %><% if(projectUri !== '') { %>
+ * Plugin URI: <%= projectUri %><% } if(projectDescription !== '') { %>
+ * Description: <%= projectDescription %><% } %>
+ * Version: <%= projectVersion %>
+ * Requires at least: <%= projectMinWpVersion %>
+ * Requires PHP: <%= projectMinPhpVersion %>
+ * Author: <%= projectAuthor.name %><% if(projectAuthor.url !== '') { %>
+ * Author URI: <%= projectAuthor.url %><% } if(i18n !== false) { %>
+ * Text Domain: <%= projectTextDomain %>
+ * Domain Path: /languages<% } if(projectLicense !== undefined) { %>
+ * License: <%= projectLicense.type %>
+ * License URI: <%= projectLicense.url %><% } %>
  */
 
-// Define theme wide control variables.
+// Define plugin wide control variables.
 define( 'MIN_PHP_VERSION', '<%= projectMinWpVersion %>' );
 define( 'MIN_WP_VERSION', '<%= projectMinPhpVersion %>' );
 
-// Define theme wide paths.
-define( 'ROOT_URL', get_template_directory_uri() );
-define( 'ROOT_URI', get_template_directory() );
-
-// Disable theme editor in admin.
-define( 'DISALLOW_FILE_EDIT', true );
+// Define plugin wide paths.
+define( 'ROOT_FILE', __FILE__ );
+define( 'ROOT_URL', plugin_dir_url( ROOT_FILE ) );
+define( 'ROOT_URI', dirname( ROOT_FILE ) );
+define( 'PLUGIN_BASENAME', plugin_basename( ROOT_FILE ) );
 
 // Path to autoloader.
 $composer = ROOT_URI . '/vendor/autoload.php';
 
-if ( function_exists( '<%= projectPrefix %>_theme_error' ) === false ) {
+if ( function_exists( '<%= projectPrefix %>_plugin_error' ) === false ) {
 	/**
 	 * Helper function for prettying up errors.
 	 *
@@ -32,15 +45,15 @@ if ( function_exists( '<%= projectPrefix %>_theme_error' ) === false ) {
 	 * @param string $title The page title.
 	 * @param array  $options Optional arguments array.
 	 */
-	function <%= projectPrefix %>_theme_error( $message, $heading = '', $title = '', $options = array() ) {
-		$title   = $title ?: __( 'theme error'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> );
+	function <%= projectPrefix %>_plugin_error( $message, $heading = '', $title = '', $options = array() ) {
+		$title   = $title ?: __( 'plugin error'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> );
 		$heading = ( $heading ) ? $heading : $title;
 		$message = "<h1>{$heading}</h1><br><br>{$message}";
 		wp_die( $message, $title, $options );
 	};
 }
 
-// Theme compatibility check, bail early if requirements are not met.
+// Plugin compatibility check, bail early if requirements are not met.
 if ( version_compare( MIN_PHP_VERSION, phpversion(), '>=' ) === true || version_compare( MIN_WP_VERSION, get_bloginfo( 'version' ), '>=' ) === true ) {
 	require ROOT_URI . '/backwards-compatibility.php';
 	return;
@@ -48,7 +61,7 @@ if ( version_compare( MIN_PHP_VERSION, phpversion(), '>=' ) === true || version_
 
 // Ensure composer autoload.php exists.
 if ( file_exists( $composer ) === false ) {
-  <%= projectPrefix %>_theme_error(
+  <%= projectPrefix %>_plugin_error(
     sprintf(
       "<code>{$composer}</code><br><br>%1s <code>%2s</code> %3s",
       __( 'Please run the'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> ),
@@ -62,7 +75,7 @@ if ( file_exists( $composer ) === false ) {
   /*
    * Required files.
    *
-   * The mapped array determines the code library included in your theme.
+   * The mapped array determines the code library included in your plugin.
    * Add or remove files to the array as needed.
    */
 
@@ -72,13 +85,13 @@ if ( file_exists( $composer ) === false ) {
     function ( $file ) {
       $file = "./inc/{$file}.php";
       if ( file_exists( $file ) === false ) {
-        <%= projectPrefix %>_theme_error(
+        <%= projectPrefix %>_plugin_error(
           "<code>{$file}</code><br><br>",
           __( 'File not found.'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> )
         );
       }
       include $file;
     },
-    ['shims', 'helpers', 'setup', 'filters']
+    ['helpers', 'setup']
   );
 }

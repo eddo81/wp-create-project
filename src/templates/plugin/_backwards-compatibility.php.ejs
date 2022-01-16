@@ -1,0 +1,82 @@
+<?php
+/**
+ * Backward-compatibility functions for when theme requirements are not met, this file must be parseable by PHP 5.2.
+ *
+ * @package <%= projectPackageName %><% if(projectAuthor.full !== '') { %>
+ * @author  "<%- projectAuthor.full %>"<% } if(projectLicense !== undefined) { %>
+ * @license <%= projectLicense.type %><% } %>
+ * @since   <%= projectVersion %>
+ */
+
+use function esc_html;
+use function get_bloginfo;
+use function is_admin;
+use function register_activation_hook;
+use deactivate_plugins;
+use function __;
+
+if ( defined( 'ABSPATH' ) === false ) {
+	exit;
+}
+
+/**
+ * Gets the message to warn the user about the theme requirements not being met.
+ *
+ * @return string Message to show to the user.
+ */
+function <%= projectPrefix %>_get_requirements_message() {
+	$incorrect_wp_version  = version_compare( MIN_WP_VERSION, get_bloginfo('version'), '>=' );
+	$incorrect_php_version = version_compare( MIN_PHP_VERSION, phpversion(), '>=' );
+
+	if ( $incorrect_wp_version && $incorrect_php_version ) {
+		/* translators: 1: plugin name, 2: required WP version number, 3: required PHP version number, 4: available WP version number, 5: available PHP version number */
+		return sprintf( __( 'The plugin "%1$s" requires at least WordPress version %2$s and PHP version %3$s. You are running versions %4$s and %5$s respectively. Please update and try again.'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> ), '<%= projectName %>', MIN_WP_VERSION, MIN_PHP_VERSION, get_bloginfo('version'), phpversion() );
+	}
+
+	if ( $incorrect_wp_version ) {
+		/* translators: 1: plugin name, 2: required WP version number, 3: available WP version number */
+		return sprintf( __( 'The plugin "%1$s" requires at least WordPress version %2$s. You are running version %3$s. Please update and try again.'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> ), '<%= projectName %>', MIN_WP_VERSION, get_bloginfo('version') );
+	}
+
+	if ( $incorrect_php_version ) {
+		/* translators: 1: plugin name, 2: required WP version number, 3: available WP version number */
+		return sprintf( __( 'The plugin "%1$s" requires at least PHP version %2$s. You are running version %3$s. Please update and try again.'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> ), '<%= projectName %>', MIN_PHP_VERSION, phpversion() );
+	}
+
+	return '';
+}
+
+/**
+ * Render plugin compatibility error message.
+ *
+ * @param array  $options The error message options.
+ * @param string $message The error message body.
+ */
+function <%= projectPrefix %>_render_compatibility_error( $options = array(), $message = '' ) {
+	$message = ( empty( $message ) ) ? esc_html( <%= projectPrefix %>_get_requirements_message() ) : $message;
+	$heading = __( 'Plugin compatibility error'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> );
+	$title   = $heading;
+	<%= projectPrefix %>_plugin_error($message, $heading, $title, $options);
+}
+
+/**
+ * Deactivate plugin when requirements are not met.
+ */
+function <%= projectPrefix %>_deactivate() {
+	if ( is_admin() ) {
+		$options = array( 'back_link' => true );
+		deactivate_plugins( PLUGIN_BASENAME );
+		<%= projectPrefix %>_render_compatibility_error( $options );
+	} else {
+		$options = array();
+		$message = __( 'There is a compatibility issue which is preventing this page from rendering properly.'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> );
+		<%= projectPrefix %>_render_compatibility_error( $options, $message );
+	}
+}
+
+/**
+ * Plugin activation
+ *
+ * @link https://developer.wordpress.org/reference/functions/register_activation_hook/
+ */
+register_activation_hook( ROOT_FILE, '<%= projectPrefix %>_deactivate' );

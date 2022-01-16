@@ -46,13 +46,13 @@ function <%= projectPrefix %>_get_requirements_message() {
 }
 
 /**
- * Render theme error message.
+ * Render theme compatibility error message.
  *
  * @param array $options The error message body.
  */
 function <%= projectPrefix %>_render_compatibility_error( $options = array() ) {
 	$message = esc_html( <%= projectPrefix %>_get_requirements_message() );
-	$heading = __( 'Compatibility error'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> );
+	$heading = __( 'Theme compatibility error'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> );
 	$title   = $heading;
 	<%= projectPrefix %>_theme_error($message, $heading, $title, $options);
 }
@@ -60,12 +60,12 @@ function <%= projectPrefix %>_render_compatibility_error( $options = array() ) {
 /**
  * Prevents switching to the theme when requirements are not met, falls back to the default theme.
  */
-function switch_theme() {
+function <%= projectPrefix %>_switch_theme() {
 	switch_theme( WP_DEFAULT_THEME );
 	unset( $_GET['activated'] );
 	add_action( 'admin_notices', '<%= projectPrefix %>_upgrade_notice' );
 }
-add_action( 'after_switch_theme', 'switch_theme' );
+add_action( 'after_switch_theme', '<%= projectPrefix %>_switch_theme' );
 
 /**
  * Adds a message for unsuccessful theme switch.

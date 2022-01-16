@@ -6,7 +6,8 @@
   Version:            <%= projectVersion %>
   Author:             <%= projectAuthor.name %><% if(projectAuthor.url !== '') { %>
   Author URI:         <%= projectAuthor.url %><% } if(i18n !== false) { %>
-  Text Domain:        <%= projectTextDomain %><% } if(projectLicense !== undefined) { %>
+  Text Domain:        <%= projectTextDomain %>
+  Domain Path:        /languages<% } if(projectLicense !== undefined) { %>
 
   License:            <%= projectLicense.type %>
   License URI:        <%= projectLicense.url %><% } %>
