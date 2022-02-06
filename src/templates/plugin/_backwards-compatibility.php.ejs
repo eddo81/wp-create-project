@@ -8,13 +8,6 @@
  * @since   <%= projectVersion %>
  */
 
-use function esc_html;
-use function get_bloginfo;
-use function is_admin;
-use function register_activation_hook;
-use deactivate_plugins;
-use function __;
-
 if ( defined( 'ABSPATH' ) === false ) {
 	exit;
 }
@@ -65,7 +58,7 @@ function <%= projectPrefix %>_render_compatibility_error( $options = array(), $m
 function <%= projectPrefix %>_deactivate() {
 	if ( is_admin() ) {
 		$options = array( 'back_link' => true );
-		deactivate_plugins( PLUGIN_BASENAME );
+		deactivate_plugins( plugin_basename( ROOT_FILE ) );
 		<%= projectPrefix %>_render_compatibility_error( $options );
 	} else {
 		$options = array();

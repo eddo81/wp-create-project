@@ -35,7 +35,7 @@ if ( function_exists( '<%= projectPrefix %>_plugin_activation' ) === false ) {
 
 	}
 }
-register_activation_hook( ROOT_FILE, '<%= projectPrefix %>_plugin_activation' );
+register_activation_hook( ROOT_FILE, __NAMESPACE__ . '\\<%= projectPrefix %>_plugin_activation' );
 
 if ( function_exists( '<%= projectPrefix %>_plugin_deactivation' ) === false ) {
 	/**
@@ -49,7 +49,7 @@ if ( function_exists( '<%= projectPrefix %>_plugin_deactivation' ) === false ) {
 
 	}
 }
-register_deactivation_hook( ROOT_FILE, '<%= projectPrefix %>_plugin_deactivation' );
+register_deactivation_hook( ROOT_FILE, __NAMESPACE__ . '\\<%= projectPrefix %>_plugin_deactivation' );
 
 if ( function_exists( '<%= projectPrefix %>_plugin_init' ) === false ) {
 	/**
@@ -67,12 +67,99 @@ if ( function_exists( '<%= projectPrefix %>_plugin_init' ) === false ) {
 		 * @link https://developer.wordpress.org/reference/functions/load_plugin_textdomain/
 		 */
 		load_plugin_textdomain( '<%= projectTextDomain %>', false, dirname( dirname( plugin_basename( ROOT_FILE ) ) ) . DIRECTORY_SEPARATOR . 'languages/' );<% } %>
+	}
+}
+add_action( 'init', __NAMESPACE__ . '\\<%= projectPrefix %>_plugin_init', 20 );
+
+if ( function_exists( '<%= projectPrefix %>_filemtime' ) === false ) {
+	/**
+	 * Wrapper function, checks for existance of file before applying filemtime.
+	 *
+	 * @param string $file Path of file.
+	 *
+	 * @return string
+	 */
+	function <%= projectPrefix %>_filemtime( string $file ) {
+		return ( file_exists( $file ) === true ) ? filemtime( $file ) : '';
+	}
+}
+
+if ( function_exists( '<%= projectPrefix %>_admin_scripts_and_styles' ) === false ) {
+	/**
+	 * Register and enqueue admin scripts and styles.
+	 *
+	 * @link https://developer.wordpress.org/reference/hooks/admin_enqueue_scripts/
+	 *
+	 * @return void
+	 */
+	function <%= projectPrefix %>_admin_scripts_and_styles() {
+		/**
+		 * Register scripts.
+		 *
+		 * @link https://developer.wordpress.org/reference/functions/wp_register_script/
+		 */
+		wp_register_script( 'admin-js', plugin_dir_url( ROOT_FILE ) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'admin.js', [], <%= projectPrefix %>_filemtime( dirname( ROOT_FILE ) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'admin.js' ), false );
 
 		/**
-		 * Enqueue plugin scripts and styles.
+		 * Register styles.
+		 *
+		 * @link https://developer.wordpress.org/reference/functions/wp_register_style/
+		 */
+		 wp_register_style( 'admin-css', plugin_dir_url( ROOT_FILE ) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'theme.css', [], <%= projectPrefix %>_filemtime( dirname( ROOT_FILE ) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'admin.css' ), 'all' );
+
+		/**
+		 * Enqueue scripts.
 		 *
 		 * @link https://developer.wordpress.org/reference/functions/wp_enqueue_script/
 		 */
+		wp_enqueue_script( 'admin-js' );
+
+		/**
+		 * Enqueue styles.
+		 *
+		 * @link https://developer.wordpress.org/reference/functions/wp_enqueue_style/
+		 */
+		wp_enqueue_style( 'admin-css' );
 	}
 }
-add_action( 'init', '<%= projectPrefix %>_plugin_init', 20 );
+add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\\<%= projectPrefix %>_admin_scripts_and_styles' );
+
+if ( function_exists( '<%= projectPrefix %>_plugin_scripts_and_styles' ) === false ) {
+	/**
+	 * Register and enqueue plugin scripts and styles.
+	 *
+	 * @link https://developer.wordpress.org/reference/hooks/wp_enqueue_scripts/
+	 *
+	 * @return void
+	 */
+	function <%= projectPrefix %>_plugin_scripts_and_styles() {
+		/**
+		 * Register scripts.
+		 *
+		 * @link https://developer.wordpress.org/reference/functions/wp_register_script/
+		 */
+		wp_register_script( 'plugin-js', plugin_dir_url( ROOT_FILE ) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'plugin.js', [], <%= projectPrefix %>_filemtime( dirname( ROOT_FILE ) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'plugin.js' ), false );
+
+		/**
+		 * Register styles.
+		 *
+		 * @link https://developer.wordpress.org/reference/functions/wp_register_style/
+		 */
+		 wp_register_style( 'plugin-css', plugin_dir_url( ROOT_FILE ) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'theme.css', [], <%= projectPrefix %>_filemtime( dirname( ROOT_FILE ) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'plugin.css' ), 'all' );
+
+		/**
+		 * Enqueue scripts.
+		 *
+		 * @link https://developer.wordpress.org/reference/functions/wp_enqueue_script/
+		 */
+		wp_enqueue_script( 'plugin-js' );
+
+		/**
+		 * Enqueue styles.
+		 *
+		 * @link https://developer.wordpress.org/reference/functions/wp_enqueue_style/
+		 */
+		wp_enqueue_style( 'plugin-css' );
+	}
+}
+add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\\<%= projectPrefix %>_plugin_scripts_and_styles' );

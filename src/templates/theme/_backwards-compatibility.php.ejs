@@ -8,12 +8,6 @@
  * @since   <%= projectVersion %>
  */
 
-use function add_action;
-use function esc_html;
-use function get_bloginfo;
-use function is_admin;
-use function __;
-
 if ( defined( 'ABSPATH' ) === false ) {
 	exit;
 }
@@ -100,7 +94,6 @@ add_action( 'template_redirect', '<%= projectPrefix %>_preview' );
  * Deactivate current theme when requirements are not met, falls back to the default theme.
  */
 function <%= projectPrefix %>_init_theme() {
-
 	if ( is_admin() ) {
 		$options = array( 'back_link' => true );
 		switch_theme();

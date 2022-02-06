@@ -30,11 +30,12 @@ define( 'MIN_WP_VERSION', '<%= projectMinPhpVersion %>' );
 // Define plugin wide paths.
 define( 'ROOT_FILE', __FILE__ );
 define( 'ROOT_URL', plugin_dir_url( ROOT_FILE ) );
-define( 'ROOT_URI', dirname( ROOT_FILE ) );
-define( 'PLUGIN_BASENAME', plugin_basename( ROOT_FILE ) );
 
 // Path to autoloader.
-$composer = ROOT_URI . '/vendor/autoload.php';
+$composer = dirname( ROOT_FILE ) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+
+// Array of filenames to include in your plugin.
+$required_files = ['helpers', 'setup'];
 
 if ( function_exists( '<%= projectPrefix %>_plugin_error' ) === false ) {
 	/**
@@ -53,9 +54,27 @@ if ( function_exists( '<%= projectPrefix %>_plugin_error' ) === false ) {
 	};
 }
 
+if ( function_exists( '<%= projectPrefix %>_include_plugin_file' ) === false ) {
+	/**
+	 * Helper function for including plugin files.
+	 *
+	 * @param string $file The name of the file to include.
+	 */
+	function <%= projectPrefix %>_include_plugin_file( string $file ) {
+		$file = dirname( ROOT_FILE ) . DIRECTORY_SEPARATOR . 'inc' . DIRECTORY_SEPARATOR . "{$file}.php";
+		if ( file_exists( $file ) === false ) {
+			<%= projectPrefix %>_plugin_error(
+				"<code>{$file}</code><br><br>",
+				__( 'File not found.'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> )
+			);
+		}
+		include $file;
+	};
+}
+
 // Plugin compatibility check, bail early if requirements are not met.
 if ( version_compare( MIN_PHP_VERSION, phpversion(), '>=' ) === true || version_compare( MIN_WP_VERSION, get_bloginfo( 'version' ), '>=' ) === true ) {
-	require ROOT_URI . '/backwards-compatibility.php';
+	require dirname( ROOT_FILE ) . DIRECTORY_SEPARATOR . 'backwards-compatibility.php';
 	return;
 }
 
@@ -71,27 +90,6 @@ if ( file_exists( $composer ) === false ) {
 		__( 'Autoloader not found.'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> )
 	);
 } else {
-
-	/*
-	 * Required files.
-	 *
-	 * The mapped array determines the code library included in your plugin.
-	 * Add or remove files to the array as needed.
-	 */
-
 	include_once $composer;
-
-	array_map(
-		function ( $file ) {
-			$file = "./inc/{$file}.php";
-			if ( file_exists( $file ) === false ) {
-				<%= projectPrefix %>_plugin_error(
-					"<code>{$file}</code><br><br>",
-					__( 'File not found.'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> )
-				);
-			}
-			include $file;
-		},
-		['helpers', 'setup']
-	);
+	array_map( '<%= projectPrefix %>_include_plugin_file', $required_files );
 }

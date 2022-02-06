@@ -15,13 +15,16 @@ define( 'MIN_WP_VERSION', '<%= projectMinPhpVersion %>' );
 
 // Define theme wide paths.
 define( 'ROOT_URL', get_template_directory_uri() );
-define( 'ROOT_URI', get_template_directory() );
+
 
 // Disable theme editor in admin.
 define( 'DISALLOW_FILE_EDIT', true );
 
 // Path to autoloader.
-$composer = ROOT_URI . '/vendor/autoload.php';
+$composer = get_template_directory() . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+
+// Array of filenames to include in your theme.
+$required_files = ['shims', 'helpers', 'setup', 'filters'];
 
 if ( function_exists( '<%= projectPrefix %>_theme_error' ) === false ) {
 	/**
@@ -40,9 +43,27 @@ if ( function_exists( '<%= projectPrefix %>_theme_error' ) === false ) {
 	};
 }
 
+if ( function_exists( '<%= projectPrefix %>_include_theme_file' ) === false ) {
+	/**
+	 * Helper function for including theme files.
+	 *
+	 * @param string $file The name of the file to include.
+	 */
+	function <%= projectPrefix %>_include_theme_file( string $file ) {
+		$file = dirname( ROOT_FILE ) . DIRECTORY_SEPARATOR . 'inc' . DIRECTORY_SEPARATOR . "{$file}.php";
+		if ( file_exists( $file ) === false ) {
+			<%= projectPrefix %>_theme_error(
+				"<code>{$file}</code><br><br>",
+				__( 'File not found.'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> )
+			);
+		}
+		include $file;
+	};
+}
+
 // Theme compatibility check, bail early if requirements are not met.
 if ( version_compare( MIN_PHP_VERSION, phpversion(), '>=' ) === true || version_compare( MIN_WP_VERSION, get_bloginfo( 'version' ), '>=' ) === true ) {
-	require ROOT_URI . '/backwards-compatibility.php';
+	require get_template_directory() . DIRECTORY_SEPARATOR . 'backwards-compatibility.php';
 	return;
 }
 
@@ -58,27 +79,6 @@ if ( file_exists( $composer ) === false ) {
 		__( 'Autoloader not found.'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> )
 	);
 } else {
-
-	/*
-	 * Required files.
-	 *
-	 * The mapped array determines the code library included in your theme.
-	 * Add or remove files to the array as needed.
-	 */
-
 	include_once $composer;
-
-	array_map(
-		function ( $file ) {
-			$file = "./inc/{$file}.php";
-			if ( file_exists( $file ) === false ) {
-				<%= projectPrefix %>_theme_error(
-					"<code>{$file}</code><br><br>",
-					__( 'File not found.'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> )
-				);
-			}
-			include $file;
-		},
-		['shims', 'helpers', 'setup', 'filters']
-	);
+	array_map( '<%= projectPrefix %>_include_theme_file', $required_files );
 }

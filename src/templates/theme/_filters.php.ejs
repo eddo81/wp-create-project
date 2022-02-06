@@ -25,7 +25,7 @@ function <%= projectPrefix %>_upload_mimes( $mimes ) {
 	$mimes['svg'] = 'image/svg+xml';
 	return $mimes;
 }
-add_filter( 'upload_mimes', '<%= projectPrefix %>_upload_mimes' );
+add_filter( 'upload_mimes', __NAMESPACE__ . '\\<%= projectPrefix %>_upload_mimes' );
 
 /**
  * Add the defer attribute to theme script tags.
@@ -39,4 +39,4 @@ function <%= projectPrefix %>_script_loader_tag( $tag, $handle ) {
 
 	return str_replace( ' src', ' defer="defer" src', $tag );
 }
-add_filter( 'script_loader_tag', '<%= projectPrefix %>_script_loader_tag', 90, 2 );
+add_filter( 'script_loader_tag', __NAMESPACE__ . '\\<%= projectPrefix %>_script_loader_tag', 90, 2 );

@@ -37,7 +37,7 @@ if ( function_exists( '<%= projectPrefix %>_theme_setup' ) === false ) {
 		 *
 		 * @link https://developer.wordpress.org/reference/functions/load_theme_textdomain/
 		 */
-		load_theme_textdomain( '<%= projectTextDomain %>', ROOT_URI . DIRECTORY_SEPARATOR . 'languages/' );<% } %>
+		load_theme_textdomain( '<%= projectTextDomain %>', get_template_directory() . DIRECTORY_SEPARATOR . 'languages/' );<% } %>
 
 		/**
 		 * Enqueue theme scripts and styles.
@@ -117,4 +117,57 @@ if ( function_exists( '<%= projectPrefix %>_theme_setup' ) === false ) {
 		 */
 	}
 }
-add_action( 'after_setup_theme', '<%= projectPrefix %>_theme_setup', 20 );
+add_action( 'after_setup_theme', __NAMESPACE__ . '\\<%= projectPrefix %>_theme_setup', 20 );
+
+if ( function_exists( '<%= projectPrefix %>_filemtime' ) === false ) {
+	/**
+	 * Wrapper function, checks for existance of file before applying filemtime.
+	 *
+	 * @param string $file Path of file.
+	 *
+	 * @return string
+	 */
+	function <%= projectPrefix %>_filemtime( string $file ) {
+		return ( file_exists( $file ) === true ) ? filemtime( $file ) : '';
+	}
+}
+
+if ( function_exists( '<%= projectPrefix %>_scripts_and_styles' ) === false ) {
+	/**
+	 * Register and enqueue scripts and styles.
+	 *
+	 * @link https://developer.wordpress.org/reference/hooks/wp_enqueue_scripts/
+	 *
+	 * @return void
+	 */
+	function <%= projectPrefix %>_scripts_and_styles() {
+		/**
+		* Register scripts.
+		*
+		* @link https://developer.wordpress.org/reference/functions/wp_register_script/
+		*/
+		wp_register_script( 'theme-js', get_template_directory_uri() . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'theme.js', [], <%= projectPrefix %>_filemtime( get_template_directory() . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'theme.js' ), true ) );
+
+		/**
+		 * Register styles.
+		 *
+		 * @link https://developer.wordpress.org/reference/functions/wp_register_style/
+		 */
+		wp_register_style( 'theme-css', get_template_directory_uri() . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'theme.css', [], <%= projectPrefix %>_filemtime( get_template_directory() . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'theme.css' ), 'all' );
+
+		/**
+		 * Enqueue scripts.
+		 *
+		 * @link https://developer.wordpress.org/reference/functions/wp_enqueue_script/
+		 */
+		wp_enqueue_script( 'theme-js' );
+
+		/**
+		 * Enqueue styles.
+		 *
+		 * @link https://developer.wordpress.org/reference/functions/wp_enqueue_style/
+		 */
+		wp_enqueue_style( 'theme-css' );
+	}
+}
+add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\\<%= projectPrefix %>_scripts_and_styles' );

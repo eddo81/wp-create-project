@@ -1,0 +1,16 @@
+/**
+ * Main method, bootstraps the <%= projectType %> JavaScript entry point.
+ *
+ * @since <%= projectName %> <%= projectVersion %>
+ *
+ * @return {void}
+ */
+function main() {
+
+}
+
+if(/complete|interactive|loaded/.test(document.readyState)) {
+	main();
+} else {
+	document.addEventListener('DOMContentLoaded', main, false);
+}
