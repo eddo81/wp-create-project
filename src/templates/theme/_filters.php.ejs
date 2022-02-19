@@ -31,12 +31,12 @@ add_filter( 'upload_mimes', __NAMESPACE__ . '\\<%= projectPrefix %>_upload_mimes
  * Add the defer attribute to theme script tags.
  */
 function <%= projectPrefix %>_script_loader_tag( $tag, $handle ) {
-	$theme_scripts = [];
+	$theme_scripts = ['theme-js'];
 
 	if ( is_admin() === true || in_array( $handle, $theme_scripts, true ) === false ) {
 		return $tag;
 	}
 
-	return str_replace( ' src', ' defer="defer" src', $tag );
+	return str_replace( '></script>', ' defer></script>', $tag );
 }
 add_filter( 'script_loader_tag', __NAMESPACE__ . '\\<%= projectPrefix %>_script_loader_tag', 90, 2 );

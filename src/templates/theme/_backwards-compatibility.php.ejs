@@ -96,7 +96,7 @@ add_action( 'template_redirect', '<%= projectPrefix %>_preview' );
 function <%= projectPrefix %>_init_theme() {
 	if ( is_admin() ) {
 		$options = array( 'back_link' => true );
-		switch_theme();
+		switch_theme( WP_DEFAULT_THEME );
 		<%= projectPrefix %>_render_compatibility_error( $options );
 	} else {
 		$title   = __( 'Compatibility error'<% if(i18n !== false) { %>, '<%= projectTextDomain %>'<% } %> );

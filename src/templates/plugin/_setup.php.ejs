@@ -98,14 +98,14 @@ if ( function_exists( '<%= projectPrefix %>_admin_scripts_and_styles' ) === fals
 		 *
 		 * @link https://developer.wordpress.org/reference/functions/wp_register_script/
 		 */
-		wp_register_script( 'admin-js', plugin_dir_url( ROOT_FILE ) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'admin.js', [], <%= projectPrefix %>_filemtime( dirname( ROOT_FILE ) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'admin.js' ), false );
+		wp_register_script( 'admin-js', plugin_dir_url( ROOT_FILE ) . 'assets/js/admin.js', [], <%= projectPrefix %>_filemtime( dirname( ROOT_FILE ) . '/assets/js/admin.js' ), false );
 
 		/**
 		 * Register styles.
 		 *
 		 * @link https://developer.wordpress.org/reference/functions/wp_register_style/
 		 */
-		 wp_register_style( 'admin-css', plugin_dir_url( ROOT_FILE ) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'theme.css', [], <%= projectPrefix %>_filemtime( dirname( ROOT_FILE ) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'admin.css' ), 'all' );
+		wp_register_style( 'admin-css', plugin_dir_url( ROOT_FILE ) . 'assets/css/admin.css', [], <%= projectPrefix %>_filemtime( dirname( ROOT_FILE ) . '/assets/css/admin.css' ), 'all' );
 
 		/**
 		 * Enqueue scripts.
@@ -138,14 +138,14 @@ if ( function_exists( '<%= projectPrefix %>_plugin_scripts_and_styles' ) === fal
 		 *
 		 * @link https://developer.wordpress.org/reference/functions/wp_register_script/
 		 */
-		wp_register_script( 'plugin-js', plugin_dir_url( ROOT_FILE ) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'plugin.js', [], <%= projectPrefix %>_filemtime( dirname( ROOT_FILE ) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'plugin.js' ), false );
+		wp_register_script( 'plugin-js', plugin_dir_url( ROOT_FILE ) . 'assets/js/plugin.js', [], <%= projectPrefix %>_filemtime( dirname( ROOT_FILE ) . '/assets/js/plugin.js' ), false );
 
 		/**
 		 * Register styles.
 		 *
 		 * @link https://developer.wordpress.org/reference/functions/wp_register_style/
 		 */
-		 wp_register_style( 'plugin-css', plugin_dir_url( ROOT_FILE ) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'theme.css', [], <%= projectPrefix %>_filemtime( dirname( ROOT_FILE ) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'plugin.css' ), 'all' );
+		wp_register_style( 'plugin-css', plugin_dir_url( ROOT_FILE ) . 'assets/css/theme.css', [], <%= projectPrefix %>_filemtime( dirname( ROOT_FILE ) . '/assets/css/theme.css' ), 'all' );
 
 		/**
 		 * Enqueue scripts.
